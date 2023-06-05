@@ -1,6 +1,6 @@
 import React from 'react';
 import qs from 'qs';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Categories from '../components/Categories';
 import Sort, { sortList } from '../components/Sort';
@@ -15,6 +15,7 @@ export default function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = React.useRef(false);
+
   const isMounted = React.useRef(false);
 
   const { categoryId, currentPage, sort, searchValue } = useSelector((state) => state.filter);
@@ -89,7 +90,11 @@ export default function Home() {
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
   const pizzas = items
-    .map((obj) => <PizzaBlock {...obj} key={obj.id} />);
+    .map((obj) => (
+      <Link key={obj.id} to={`/pizza/${obj.id}`}>
+        <PizzaBlock {...obj}  />
+      </Link>
+    ));
   const sceletons = [...new Array(4)].map((_, index) => <Sceleton key={index} />);
 
   const onChangePage = (num) => {
