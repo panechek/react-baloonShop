@@ -6,7 +6,7 @@ import Cart from './pages/Cart';
 import NotFound from './pages/NotFound';
 
 import './scss/app.scss';
-import Fullpizza from './pages/Fullpizza';
+import Fullpizza from './pages/Fullpizza.tsx';
 import MainLayout from './layouts/MainLayout';
 
 const App = () => {
