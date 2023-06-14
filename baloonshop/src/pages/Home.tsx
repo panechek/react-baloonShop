@@ -8,23 +8,27 @@ import PizzaBlock from '../components/PizzaBlock';
 import Sceleton from '../components/PizzaBlock/Sceleton';
 import Pagination from '../components/Pagination';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
-import { fetchPizzas } from '../redux/slices/pizzaSlice';
+import { selectFilters, setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
+import { fetchPizzas, selectPizzaData } from '../redux/slices/pizzaSlice';
 
-export default function Home() {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = React.useRef(false);
 
   const isMounted = React.useRef(false);
 
-  const { categoryId, currentPage, sort, searchValue } = useSelector((state) => state.filter);
-  const { items, status } = useSelector((state) => state.pizza);
+  const { categoryId, currentPage, sort, searchValue } = useSelector(selectFilters);
+  const { items, status } = useSelector(selectPizzaData);
 
-  const onChangeCategory = React.useCallback((idx) => {
+  const onChangeCategory = React.useCallback((idx: number) => {
     dispatch(setCategoryId(idx));
     // eslint-disable-next-line
   }, []);
+
+  const onChangePage = (page: number) => {
+    dispatch(setCurrentPage(page));
+  };
 
   const setFetchPizzas = async () => {
     const sortBy = sort.sortProperty.replace('-', '');
@@ -34,6 +38,7 @@ export default function Home() {
     const page = `&page=${currentPage}`;
 
       dispatch(
+        //@ts-ignore
         fetchPizzas({
           sortBy,
           order,
@@ -90,22 +95,20 @@ export default function Home() {
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
   const pizzas = items
-    .map((obj) => (
+    .map((obj: any) => (
       <Link key={obj.id} to={`/pizza/${obj.id}`}>
         <PizzaBlock {...obj}  />
       </Link>
     ));
   const sceletons = [...new Array(4)].map((_, index) => <Sceleton key={index} />);
 
-  const onChangePage = (num) => {
-    dispatch(setCurrentPage(num));
-  };
+
 
   return (
     <div className="container">
       <div className="content__top">
         <Categories value={categoryId} onChangeCategory={onChangeCategory} />
-        <Sort value={sort} />
+        <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       {status === 'error' ? (
@@ -120,3 +123,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;

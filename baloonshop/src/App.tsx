@@ -6,10 +6,10 @@ import Cart from './pages/Cart';
 import NotFound from './pages/NotFound';
 
 import './scss/app.scss';
-import Fullpizza from './pages/Fullpizza.tsx';
+import Fullpizza from './pages/Fullpizza';
 import MainLayout from './layouts/MainLayout';
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>

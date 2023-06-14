@@ -2,17 +2,18 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import CartItem from '../components/CartItem';
-import { clearCart } from '../redux/slices/cartSlice';
+import { clearCart, selectCart } from '../redux/slices/cartSlice';
 import EmptyCart from '../components/EmptyCart';
 
-export default function Cart() {
-  const {items, totalPrice, totalCount} = useSelector((state) => state.cart);
+const Cart: React.FC = () => {
+  const { items, totalPrice, totalCount } = useSelector(selectCart);
   const dispatch = useDispatch();
+  if (!totalPrice) {
+    return <EmptyCart />;
+  }
   return (
     <div className="container container--cart">
-      {
-        totalPrice !== 0 ? (
-          <div className="cart">
+      <div className="cart">
         <div className="cart__top">
           <h2 className="content__title">
             <svg
@@ -89,7 +90,9 @@ export default function Cart() {
           </div>
         </div>
         <div className="content__items">
-          {items.map((obj) => <CartItem {...obj} key={obj.id} />)}
+          {items.map((obj: any) => (
+            <CartItem {...obj} key={obj.id} />
+          ))}
         </div>
         <div className="cart__bottom">
           <div className="cart__bottom-details">
@@ -119,7 +122,6 @@ export default function Cart() {
                   strokeLinejoin="round"
                 />
               </svg>
-
               <span>Вернуться назад</span>
             </Link>
             <div className="button pay-btn">
@@ -128,9 +130,7 @@ export default function Cart() {
           </div>
         </div>
       </div>
-        ) : (<EmptyCart />)
-      }
-      
     </div>
   );
-}
+};
+export default Cart;

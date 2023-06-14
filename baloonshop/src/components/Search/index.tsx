@@ -5,16 +5,16 @@ import { setSearchValue } from '../../redux/slices/filterSlice';
 import styles from './Search.module.scss';
 import { useDispatch } from 'react-redux';
 
-export default function Search() {
+const Search: React.FC = () => {
   const [value, setValue] = React.useState('');
   const dispatch = useDispatch();
 
-  const inputRef = React.useRef();
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const onClearInput = () => {
     setSearchValue('');
     setValue('');
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 // eslint-disable-next-line
   const updateSearchValue = React.useCallback(
@@ -24,13 +24,13 @@ export default function Search() {
     [],
   );
 
-  const onChangeInput = (event) => {
+  const onChangeInput = (event: any) => {
     setValue(event.target.value);
     updateSearchValue(event.target.value);
   };
 
   React.useEffect(() => {
-    inputRef.current.focus();
+    inputRef.current?.focus();
   }, []);
 
   return (
@@ -66,3 +66,5 @@ export default function Search() {
     </div>
   );
 }
+
+export default Search;

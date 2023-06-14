@@ -1,8 +1,13 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { setSort } from '../redux/slices/filterSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSort, setSort } from '../redux/slices/filterSlice';
 
-export const sortList = [
+type SortItem = {
+  name: string;
+  sortProperty: string;
+};
+
+export const sortList: SortItem[] = [
     { name: 'популярности ⬆', sortProperty: '-rating' },
     { name: 'популярности ⬇', sortProperty: 'rating' },
     { name: 'цене ⬆', sortProperty: '-price' },
@@ -11,19 +16,20 @@ export const sortList = [
     { name: 'алфавиту ⬇', sortProperty: 'title' },
   ];
 
-const Sort = React.memo(({ value }) => {
+const Sort: React.FC = () => {
+    const sort = useSelector(selectSort);
     const [open, setOpen] = React.useState(false);
     const dispatch = useDispatch();
-    const sortRef = React.useRef(null);
+    const sortRef = React.useRef<HTMLDivElement>(null);
   
     
-    const onClickListItem = (obj) => {
+    const onClickListItem = (obj: SortItem) => {
       dispatch(setSort(obj));
       setOpen(false);
     };
   
     React.useEffect(() => {
-      const handleClickOutside = (event) => {
+      const handleClickOutside = (event: any) => {
         const _event = event;
         if (sortRef.current && !_event.path.includes(sortRef.current)) {
           setOpen(false);
@@ -51,7 +57,7 @@ const Sort = React.memo(({ value }) => {
             />
           </svg>
           <b>Сортировка по:</b>
-          <span onClick={() => setOpen(!open)}>{value.name}</span>
+          <span onClick={() => setOpen(!open)}>{sort.name}</span>
         </div>
         {open && (
           <div className="sort__popup">
@@ -59,7 +65,7 @@ const Sort = React.memo(({ value }) => {
               {sortList.map((obj, i) => (
                 <li
                   key={i}
-                  className={value.sortProperty === obj.sortProperty ? 'active' : ''}
+                  className={sort.sortProperty === obj.sortProperty ? 'active' : ''}
                   onClick={() => onClickListItem(obj)}
                 >
                   {obj.name}
@@ -71,6 +77,6 @@ const Sort = React.memo(({ value }) => {
       </div>
     );
 }
-)
+
 
 export default Sort;
