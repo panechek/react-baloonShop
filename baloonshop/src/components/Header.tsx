@@ -6,8 +6,17 @@ import { useSelector } from 'react-redux';
 import { selectCart } from '../redux/slices/cartSlice';
 
 const Header: React.FC = () => {
-  const { totalPrice, totalCount } = useSelector(selectCart);
+  const { totalPrice, totalCount, items } = useSelector(selectCart);
   const { pathname } = useLocation();
+  const isMounted = React.useRef(false);
+
+  React.useEffect(() => {
+    if (isMounted) {
+      const json = JSON.stringify(items);
+      localStorage.setItem('cart', json);
+    }
+    isMounted.current = true;
+  }, [items]);
   return (
     <div className="header">
       <div className="container">
@@ -20,7 +29,7 @@ const Header: React.FC = () => {
             </div>
           </div>
         </Link>
-        <Search />
+        {pathname !== '/cart' && <Search />}
         <div className="header__cart">
           {pathname !== '/cart' && (
             <Link to="/cart" className="button button--cart">

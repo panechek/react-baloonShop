@@ -1,19 +1,21 @@
 import React from 'react';
 import qs from 'qs';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Categories from '../components/Categories';
 import Sort, { sortList } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Sceleton from '../components/PizzaBlock/Sceleton';
 import Pagination from '../components/Pagination';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { selectFilters, setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
-import { fetchPizzas, selectPizzaData } from '../redux/slices/pizzaSlice';
+import { SearchPizzaParams, fetchPizzas, selectPizzaData } from '../redux/slices/pizzaSlice';
+import { useAppDispatch } from '../redux/store';
+import { Status } from 'ahooks/lib/useExternal';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isSearch = React.useRef(false);
 
   const isMounted = React.useRef(false);
@@ -38,46 +40,50 @@ const Home: React.FC = () => {
     const page = `&page=${currentPage}`;
 
       dispatch(
-        //@ts-ignore
         fetchPizzas({
           sortBy,
           order,
           category,
           search,
-          page,
+          currentPage: String(page),
         }),
       );
     window.scrollTo(0, 0);
   };
 
+  //Если изменили параметры и был первый рендер
   React.useEffect(() => {
     if (isMounted.current) {
       const queryString = qs.stringify({
         sortProperty: sort.sortProperty,
-        categoryId,
+        categoryId: categoryId > 0 ? categoryId : null,
         currentPage,
-      });
+      }, { skipNulls: true });
 
-      navigate(`?${queryString}`);
+      navigate(`/?${queryString}`);
     }
-    isMounted.current = true;
+
+    if (!window.location.search) {
+      dispatch(fetchPizzas({} as SearchPizzaParams));
+    }
     // eslint-disable-next-line
   }, [categoryId, sort.sortProperty, currentPage]);
 
   // Если был первый рендер, то проверяем URl-параметры и сохраняем в редуксе
   React.useEffect(() => {
     if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
-
-      const sort = sortList.find((obj) => obj.sortProperty === params.sortProperty);
-
+      const params = qs.parse(window.location.search.substring(1)) as unknown as SearchPizzaParams;
+      const sort = sortList.find((obj) => obj.sortProperty === params.sortBy);
+    
       dispatch(
         setFilters({
-          ...params,
-          sort,
+          searchValue: params.search,
+          categoryId: Number(params.category),
+          currentPage: Number(params.currentPage),
+          sort: sort || sortList[0],
         }),
       );
-      isSearch.current = true;
+      isMounted.current = true;
     }
     // eslint-disable-next-line
   }, []);
@@ -96,9 +102,7 @@ const Home: React.FC = () => {
 
   const pizzas = items
     .map((obj: any) => (
-      <Link key={obj.id} to={`/pizza/${obj.id}`}>
-        <PizzaBlock {...obj}  />
-      </Link>
+        <PizzaBlock {...obj} key={obj.id} />
     ));
   const sceletons = [...new Array(4)].map((_, index) => <Sceleton key={index} />);
 
@@ -108,10 +112,10 @@ const Home: React.FC = () => {
     <div className="container">
       <div className="content__top">
         <Categories value={categoryId} onChangeCategory={onChangeCategory} />
-        <Sort />
+        <Sort value={sort}/>
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      {status === 'error' ? (
+      {status as Status === 'error' ? (
         <div className="content__error-info">
           <h2>Произошла ошибка</h2>
           <p>К сожалению, не удалось получить шарики. Попробуйте повоторить попытку позже.</p>
