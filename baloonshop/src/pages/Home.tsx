@@ -8,10 +8,13 @@ import PizzaBlock from '../components/PizzaBlock';
 import Sceleton from '../components/PizzaBlock/Sceleton';
 import Pagination from '../components/Pagination';
 import { useSelector } from 'react-redux';
-import { selectFilters, setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
-import { SearchPizzaParams, fetchPizzas, selectPizzaData } from '../redux/slices/pizzaSlice';
 import { useAppDispatch } from '../redux/store';
 import { Status } from 'ahooks/lib/useExternal';
+import { selectPizzaData } from '../redux/pizza/selectors';
+import { selectFilters } from '../redux/filter/selectors';
+import { setCategoryId, setCurrentPage, setFilters } from '../redux/filter/slice';
+import { SearchPizzaParams } from '../redux/pizza/types';
+import { fetchPizzas } from '../redux/pizza/asyncActions';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
