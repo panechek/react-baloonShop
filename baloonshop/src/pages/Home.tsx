@@ -2,11 +2,10 @@ import React from 'react';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
 
-import Categories from '../components/Categories';
-import Sort, { sortList } from '../components/Sort';
-import PizzaBlock from '../components/PizzaBlock';
-import Sceleton from '../components/PizzaBlock/Sceleton';
-import Pagination from '../components/Pagination';
+import { sortList } from '../components/Sort';
+
+import { Categories, Sort, PizzaBlock, Sceleton, Pagination } from '../components'
+
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../redux/store';
 import { Status } from 'ahooks/lib/useExternal';

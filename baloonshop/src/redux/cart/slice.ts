@@ -4,13 +4,7 @@ import { calcTotalPrice } from '../../utils/calcTotalPrice';
 import { calcTotalCount } from '../../utils/calcTotalCount';
 import { CartItem, CartSliceState } from './types';
 
-const { items, totalPrice, totalCount } = getCartFromLS();
-
-const initialState: CartSliceState = {
-  totalPrice: totalPrice,
-  totalCount: totalCount,
-  items: items,
-};
+const initialState: CartSliceState = getCartFromLS();
 
 export const cartSlice = createSlice({
   name: 'cart',
